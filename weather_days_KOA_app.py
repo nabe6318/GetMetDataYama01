@@ -37,7 +37,7 @@ locations = {
 
 # --- タイトル ---
 st.title("メッシュ気象データ取得アプリ")
-st.write("観測地点と気象要素を選び、メッシュ気象データを取得します。Created by O. Watanabe.")
+st.write("地点を選んで山の気象データを取得します。Created by O. Watanabe, Shinshu Univ.")
 
 # --- 地点選択 ---
 st.subheader("1. 観測地点の選択")
