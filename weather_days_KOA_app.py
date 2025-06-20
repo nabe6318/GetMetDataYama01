@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates  # 日付フォーマット用
 import AMD_Tools4 as amd
 
 # --- 気象要素の一覧（日本語名 + 記号） ---
@@ -48,7 +49,11 @@ st.success(f"選択された地点：{selected_location}（緯度 {lat:.4f}, 経
 st.subheader("2. 取得期間と気象要素の指定(26日先まで指定可能)")
 start_date = st.date_input("開始日")
 end_date = st.date_input("終了日")
-selected_labels = st.multiselect("取得する気象要素（記号付き）複数選択可能です", list(ELEMENT_OPTIONS.keys()), default=["日平均気温 (TMP_mea)"])
+selected_labels = st.multiselect(
+    "取得する気象要素（記号付き）複数選択可能です",
+    list(ELEMENT_OPTIONS.keys()),
+    default=["日平均気温 (TMP_mea)"]
+)
 
 # --- 実行処理 ---
 if st.button("データを取得"):
@@ -76,10 +81,10 @@ if st.button("データを取得"):
                 normals[label + "（平年値）"] = norm_data[:, 0, 0]
 
                 if tim_ref is None:
-                    tim_ref = tim  # 最初のタイムスタンプを基準とする
+                    tim_ref = pd.to_datetime(tim)  # 時系列として扱う
 
             df = pd.DataFrame({**records, **normals})
-            df.insert(0, "日付", [str(t) for t in tim_ref])
+            df.insert(0, "日付", tim_ref)
 
             st.subheader("3. データ表示（AMDと平年値）")
             st.dataframe(df)
@@ -95,6 +100,7 @@ if st.button("データを取得"):
                 ax.set_xlabel("日付")
                 ax.set_ylabel(label)
                 ax.tick_params(axis='x', labelrotation=45)
+                ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))  # ← 月日表示に修正
                 ax.legend()
                 st.pyplot(fig)
 
